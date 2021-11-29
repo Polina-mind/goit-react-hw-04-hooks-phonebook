@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Contacts.css';
 
-const Contacts = ({ contacts, onSubmit }) => {
+const Contacts = ({ contacts, onDelete }) => {
   return (
     <section className="Contacts">
       <ul className="ContactsList">
@@ -13,7 +13,7 @@ const Contacts = ({ contacts, onSubmit }) => {
             <button
               className="ButtonDelete"
               type="submit"
-              onClick={() => onSubmit(id)}
+              onClick={() => onDelete(id)}
               id={id}
             >
               Delete
@@ -33,7 +33,7 @@ Contacts.propTypes = {
       number: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default Contacts;
