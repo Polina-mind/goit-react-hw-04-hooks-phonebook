@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useReducer } from 'react';
+import { Container, Typography, Paper } from '@mui/material';
 import Form from './components/Form';
 import Contacts from './components/Contacts';
 import Filter from './components/Filter';
@@ -22,63 +23,47 @@ const contactsReducer = (state, action) => {
 };
 
 function App() {
-  //contacts
-  // const [contacts, setContacts] = useState([]);
-
-  //через useReducer
   const [contacts, dispatch] = useReducer(contactsReducer, []);
+  const [filter, setFilter] = useState();
 
   useEffect(() => {
     const contacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(contacts);
 
-    if (parsedContacts) {
-      // setContacts(parsedContacts);
-
-      //через редьюсер
+    if (parsedContacts)
       dispatch({ type: 'uploadContacts', payload: parsedContacts });
-    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  const addContact = (name, number) => {
+  const addContact = (newName, newNumber) => {
     const contact = {
       id: uuidv4(),
-      name: name,
-      number: number,
+      name: newName,
+      number: newNumber,
     };
 
-    if (name !== '' && number !== '') {
-      const namesArr = contacts.map(({ name }) => name);
-      if (namesArr.includes(contact.name)) {
+    if (newName !== '' && newNumber !== '') {
+      const sameContact = contacts.some(
+        ({ name, number }) => name === newName && number === newNumber,
+      );
+
+      if (sameContact) {
         alert('Contact already exist');
         return;
       }
-      // setContacts(prevContacts => [contact, ...prevContacts]);
 
-      //через редьюсер
       dispatch({ type: 'addContact', payload: { contact } });
     }
   };
 
   const deleteContact = id => {
-    // setContacts(prevContacts =>
-    //   prevContacts.filter(contact => contact.id !== id),
-    // );
-
-    //через редьюсер
     dispatch({ type: 'deleteContact', payload: { id } });
   };
 
-  //filter
-  const [filter, setFilter] = useState();
-
-  const onInputFilter = filter => {
-    setFilter(filter);
-  };
+  const onInputFilter = filter => setFilter(filter);
 
   const getVisibleContacts = () => {
     const normalizedFilter = filter.toLowerCase();
@@ -89,18 +74,24 @@ function App() {
   };
 
   return (
-    <>
-      <h2 className="Title">Phonebook</h2>
-      <Form onSubmit={addContact}></Form>
+    <Container maxWidth="sm" sx={{ p: 2, textAlign: 'center' }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Phonebook
+      </Typography>
 
-      <h2 className="Title">Contacts</h2>
-      <Filter onInputFilter={onInputFilter}></Filter>
+      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        <Form onSubmit={addContact} />
+      </Paper>
 
-      <Contacts
-        contacts={filter ? getVisibleContacts() : contacts}
-        onDelete={deleteContact}
-      ></Contacts>
-    </>
+      <Paper elevation={2} sx={{ p: 3 }}>
+        {contacts.length > 0 && <Filter onInputFilter={onInputFilter} />}
+
+        <Contacts
+          contacts={filter ? getVisibleContacts() : contacts}
+          onDelete={deleteContact}
+        />
+      </Paper>
+    </Container>
   );
 }
 
