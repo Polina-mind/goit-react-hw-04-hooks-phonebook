@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import './Filter.css';
+import { Box, TextField } from '@mui/material';
 
 function Filter({ onInputFilter }) {
   const [filter, setFilter] = useState('');
@@ -13,17 +13,17 @@ function Filter({ onInputFilter }) {
   };
 
   return (
-    <div>
-      <p className="FindTitle">Find contacts by name</p>
-
-      <input
+    <Box className="Form" component="form" pb={0}>
+      <TextField
+        size="small"
         className="InputFilter"
+        label="Find by name"
         value={filter}
         onChange={handleChange}
-        type="text"
-        name="filter"
+        variant="outlined"
+        fullWidth
       />
-    </div>
+    </Box>
   );
 }
 
