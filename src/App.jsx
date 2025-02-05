@@ -15,7 +15,7 @@ const contactsReducer = (state, action) => {
       return [action.payload.contact, ...state];
 
     case 'deleteContact':
-      return state.filter(contact => contact.id !== action.payload.id);
+      return state.filter(({ id }) => id !== action.payload.id);
 
     default:
       return state;
@@ -45,25 +45,14 @@ function App() {
       number: newNumber,
     };
 
-    if (newName !== '' && newNumber !== '') {
-      const sameContact = contacts.some(
-        ({ name, number }) => name === newName && number === newNumber,
-      );
-
-      if (sameContact) {
-        alert('Contact already exist');
-        return;
-      }
-
-      dispatch({ type: 'addContact', payload: { contact } });
-    }
+    dispatch({ type: 'addContact', payload: { contact } });
   };
 
   const deleteContact = id => {
     dispatch({ type: 'deleteContact', payload: { id } });
   };
 
-  const onInputFilter = filter => setFilter(filter);
+  const handleFilterChange = filter => setFilter(filter);
 
   const getVisibleContacts = () => {
     const normalizedFilter = filter.toLowerCase();
@@ -73,6 +62,20 @@ function App() {
     );
   };
 
+  const checkContact = (newName, newNumber) => {
+    for (const { name, number } of contacts) {
+      if (name === newName && number === newNumber) {
+        alert('Contact already exists');
+        return false;
+      }
+      if (number === newNumber) {
+        alert('Contact with the same number already exists');
+        return false;
+      }
+    }
+    return true;
+  };
+
   return (
     <Container maxWidth="sm" sx={{ p: 2, textAlign: 'center' }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -80,11 +83,11 @@ function App() {
       </Typography>
 
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Form onSubmit={addContact} />
+        <Form onCheckContact={checkContact} onSubmit={addContact} />
       </Paper>
 
       <Paper elevation={2} sx={{ p: 3 }}>
-        {contacts.length > 0 && <Filter onInputFilter={onInputFilter} />}
+        {contacts.length > 0 && <Filter onFilterChange={handleFilterChange} />}
 
         <Contacts
           contacts={filter ? getVisibleContacts() : contacts}

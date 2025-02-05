@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Box, TextField, Button, FormControl } from '@mui/material';
 
-function Form({ onSubmit }) {
+function Form({ onCheckContact, onSubmit }) {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
@@ -25,12 +25,12 @@ function Form({ onSubmit }) {
   const handleSubmit = event => {
     event.preventDefault();
 
-    onSubmit(name, number);
-    setName('');
-    setNumber('');
+    if (onCheckContact(name, number)) {
+      onSubmit(name, number);
+      setName('');
+      setNumber('');
+    }
   };
-
-  const isButtonDisabled = !name || !number;
 
   return (
     <Box component="form" onSubmit={handleSubmit} className="Form">
@@ -63,7 +63,7 @@ function Form({ onSubmit }) {
         variant="contained"
         color="primary"
         className="Button"
-        disabled={isButtonDisabled}
+        disabled={!name || !number}
       >
         Add contact
       </Button>
@@ -72,6 +72,7 @@ function Form({ onSubmit }) {
 }
 
 Form.propTypes = {
+  onCheckContact: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 
